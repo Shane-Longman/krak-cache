@@ -63,8 +63,9 @@ def main(
             result: dict = js['result']
             now_ts = float(result['last']) / 1e9
 
+            js_trades = result.get(market, None) or result[next(iter(result.keys()))]
             js_trade: list
-            for js_trade in result[market]:
+            for js_trade in js_trades:
                 price: str = js_trade[0]
                 vol: str = js_trade[1]
                 ts: float = float(js_trade[2])
@@ -77,7 +78,7 @@ def main(
                 #trades.append(trade)
 
             # update `now` for printing
-            now = UTC0 + dt.timedelta(seconds=result[market][-1][2])
+            now = UTC0 + dt.timedelta(seconds=js_trades[-1][2])
 
         for iso, minute_trades in trades.items():
             if minute_trades:
