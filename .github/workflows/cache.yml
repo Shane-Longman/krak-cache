@@ -25,8 +25,8 @@ jobs:
     - name: Update apt
       run: sudo apt-get update -y
 
-    - name: Install plac
-      run: pip install --user plac
+    - name: Install python modules
+      run: pip install --user plac brotli
 
     - name: Create working directory
       run: mkdir -p "${INPUT_WORK_DIR}"
