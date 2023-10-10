@@ -10,7 +10,7 @@ if [[ -p /dev/stdin ]]
 then
     PAIRS=$(cat -)
     YMD=${1:-$(date -d yesterday +%Y/%m/%d)}
-    YM=${1:-$(date -d yesterday +%Y/%m)}
+    YM=${YMD:0:7}
 
     for p in $PAIRS; do
 
