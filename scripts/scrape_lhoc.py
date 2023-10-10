@@ -55,16 +55,29 @@ def main(
             print(f'>>> {market} at {now.strftime("%Y-%m-%d %H:%M:%S")}')
 
             request_no += 1
-            if request_no % 5 == 0:
-                time.sleep(1)
-            url = f'https://api.kraken.com/0/public/Trades?pair={market}&since={now_ts}'
-            res = requests.get(url, headers={'Accept-Encoding': 'gzip, deflate, br'})
-            if not res.status_code == 200:
-                print(res)
-            assert res.status_code == 200
 
-            js: dict = res.json()
-            assert not js['error'], str(js['error'])
+            MAX_RETRIES = 5
+            retries = MAX_RETRIES
+            while retries > 0:
+                retries -= 1
+                if request_no % 5 == 0:
+                    time.sleep(1)
+                url = f'https://api.kraken.com/0/public/Trades?pair={market}&since={now_ts}'
+                res = requests.get(url, headers={'Accept-Encoding': 'gzip, deflate, br'})
+                if not res.status_code == 200:
+                    print(res)
+                assert res.status_code == 200
+
+                js: dict = res.json()
+                js_error = js['error']
+                if not js_error:
+                    break
+                elif 'EGeneral:Internal error' in js_error:
+                    print(f'[w] [EGeneral:Internal error] Try {MAX_RETRIES - retries} of {MAX_RETRIES}')
+                    assert retries != 0, "[!] [EGeneral:Internal error] Maximum number of retries exceeded."
+                    time.sleep(10)
+                else:
+                    assert not js_error, str(js['error'])
 
             result: dict = js['result']
             now_ts = float(result['last']) / 1e9
