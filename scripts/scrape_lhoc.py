@@ -80,7 +80,6 @@ def main(
                     assert not js_error, str(js['error'])
 
             result: dict = js['result']
-            now_ts = float(result['last']) / 1e9
 
             js_trades = result.get(market, None) or result[next(iter(result.keys()))]
             js_trade: list
@@ -98,6 +97,12 @@ def main(
 
             # update `now` for printing
             now = UTC0 + dt.timedelta(seconds=js_trades[-1][2])
+
+            new_now_ts = float(result['last']) / 1e9
+            if now_ts == new_now_ts:
+                print('[i] End of trades')
+                break
+            now_ts = new_now_ts
 
         for iso, minute_trades in trades.items():
             if minute_trades:
