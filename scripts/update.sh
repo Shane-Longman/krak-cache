@@ -20,7 +20,7 @@ then
         # compress and delete original
         xz -9f "${p}/${YMD}"
 
-        #sleep 15
+        sleep 1
 
     done
 
