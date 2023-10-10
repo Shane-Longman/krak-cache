@@ -55,7 +55,7 @@ def main(
             print(f'>>> {market} at {now.strftime("%Y-%m-%d %H:%M:%S")}')
 
             request_no += 1
-            if request_no % 25 == 0:
+            if request_no % 5 == 0:
                 time.sleep(1)
             url = f'https://api.kraken.com/0/public/Trades?pair={market}&since={now_ts}'
             res = requests.get(url, headers={'Accept-Encoding': 'gzip, deflate, br'})
