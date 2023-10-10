@@ -37,6 +37,15 @@ def main():
     common = set.intersection(set(kraken_markets), set(bina_markets))
 
     common = sorted([m for m in common])
+    common = [m for m in common
+              if m.endswith('-USDT')
+              or m.endswith('-USDC')
+              or m.endswith('-BTC')
+              or m.endswith('-XBT')
+              or m.endswith('-ETH')
+              or m.endswith('-EUR')
+              or m.endswith('-USD')
+             ]
     print(" ".join(common))
 
 
