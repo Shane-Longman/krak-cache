@@ -1,0 +1,33 @@
+name: "KRAK cache"
+on:
+  schedule:
+    - cron: '59 1 * * *'
+  workflow_dispatch:
+    inputs:
+      script_date:
+        description: 'Date to pass to update.sh. Format: YYYY/MM/DD'
+        required: true
+        default: ''
+
+jobs:
+  build:
+    name: Collect daily data
+    runs-on: ubuntu-latest
+    env:
+        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INPUT_WORK_DIR: .build
+        INPUT_CREATE_README: true
+        INPUT_SOURCE_DIR: scripts ## existing directory inside the repo
+        INPUT_INSTALL_EXTENSIONS: true
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Update apt
+      run: sudo apt-get update -y
+
+    - name: Create working directory
+      run: mkdir -p "${INPUT_WORK_DIR}"
+
+    - name: Build
+      run: |
+        "${INPUT_SOURCE_DIR}"/pairs.py | "${INPUT_SOURCE_DIR}"/update.sh ${{ github.event.inputs.script_date }}

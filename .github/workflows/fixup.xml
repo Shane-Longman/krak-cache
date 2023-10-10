@@ -1,0 +1,29 @@
+name: "Fix corrupted downloads"
+on:
+  workflow_dispatch:
+    inputs:
+      market:
+        description: 'Market pair to fix, e.g. PROM-BTC.'
+        required: true
+        default: ''
+      day_date:
+        description: 'Day date to fix, e.g. 2023/01/31.'
+        required: true
+        default: ''
+
+jobs:
+  build:
+    name: Fix daily upload
+    runs-on: ubuntu-latest
+    env:
+        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INPUT_SOURCE_DIR: scripts ## existing directory inside the repo
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Update apt
+      run: sudo apt-get update -y
+
+    - name: Fix
+      run: |
+        echo ${{ github.event.inputs.market }} | "${INPUT_SOURCE_DIR}"/update.sh ${{ github.event.inputs.day_date }}
