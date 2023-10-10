@@ -7,6 +7,7 @@ import datetime as dt
 from typing import List
 from collections import defaultdict
 from decimal import Decimal as D
+import time
 
 
 # example usage:
@@ -48,9 +49,14 @@ def main(
         now: dt.datetime = begin
         now_ts: float = (now - UTC0).total_seconds()
 
+        request_no = 0
+
         while now < end:
             print(f'>>> {market} at {now.strftime("%Y-%m-%d %H:%M:%S")}')
 
+            request_no += 1
+            if request_no % 25 == 0:
+                time.sleep(1)
             url = f'https://api.kraken.com/0/public/Trades?pair={market}&since={now_ts}'
             res = requests.get(url, headers={'Accept-Encoding': 'gzip, deflate, br'})
             if not res.status_code == 200:
