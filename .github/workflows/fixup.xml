@@ -24,6 +24,9 @@ jobs:
     - name: Update apt
       run: sudo apt-get update -y
 
+    - name: Install plac
+      run: pip install --user plac
+
     - name: Fix
       run: |
         echo ${{ github.event.inputs.market }} | "${INPUT_SOURCE_DIR}"/update.sh ${{ github.event.inputs.day_date }}
