@@ -95,6 +95,9 @@ def main(
                 #trade = '{},{},{},{},{},{}\n'.format(iso, js_trade['T'], int(js_trade['m']), js_trade['a'], js_trade['p'], js_trade['q'])
                 #trades.append(trade)
 
+            if not js_trades:
+                print("[i] Empty trades list in response.")
+                break
             # update `now` for printing
             now = UTC0 + dt.timedelta(seconds=js_trades[-1][2])
 
