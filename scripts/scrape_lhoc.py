@@ -12,7 +12,7 @@ import time
 
 # example usage:
 #
-# ./scrape_lhoc_kraken.py 2021-06-03 XDG-USDT
+# ./scrape_lhoc.py 2021-06-03 XDG-USDT
 
 
 def parse_date(s):
@@ -61,7 +61,7 @@ def main(
             while retries > 0:
                 retries -= 1
                 if request_no % 5 == 0:
-                    time.sleep(1)
+                    time.sleep(2)
                 url = f'https://api.kraken.com/0/public/Trades?pair={market}&since={now_ts}'
                 res = requests.get(url, headers={'Accept-Encoding': 'gzip, deflate, br'})
                 if not res.status_code == 200:
