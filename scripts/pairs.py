@@ -3,18 +3,21 @@
 
 import requests
 import json
+import sys
 
 
 def main():
 
     kraken_res = requests.get('https://api.kraken.com/0/public/AssetPairs')
     if kraken_res.status_code != 200:
-        print('Bad status code. Aborting')
+        print('[Kraken] Bad status code. Aborting', file=sys.stderr)
+        print(kraken_res.text, file=sys.stderr)
         return
 
     bina_res = requests.get('https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false')
     if bina_res.status_code != 200:
-        print('Bad status code. Aborting')
+        print('[Binance] Bad status code. Aborting', file=sys.stderr)
+        print(bina_res.text, file=sys.stderr)
         return
 
     kraken_json = kraken_res.json()
