@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: What is my IP?
-      run: ip a
+      run: curl ifconfig.me
 
     - name: Update apt
       run: sudo apt-get update -y
