@@ -101,6 +101,7 @@ def main():
     delay = 5
     headers = {
         'Accept-Encoding': 'gzip, deflate, br',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36',
     }
 
     session: requests.Session = requests_retry_session(retries=retries)
@@ -110,7 +111,7 @@ def main():
         timeout=timeout,
         delay=delay,
     )
-    #bina_res = requests.get('https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false')
+    #bina_res = requests.get('http://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false')
     if bina_res.status_code != 200:
         print(f'[Binance] Bad status code {bina_res.status_code}. Aborting', file=sys.stderr)
         print(bina_res.text, file=sys.stderr)
