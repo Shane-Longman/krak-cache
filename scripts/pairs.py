@@ -4,15 +4,89 @@
 import requests
 import json
 import sys
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+from typing import Dict, List, Set, Tuple, Union, Any, Optional, Mapping
+import logging
+import brotli
 
-def http_get_with_urllib3(url):
-    import urllib3
-    http = urllib3.PoolManager()
-    r = http.request('GET', url, preload_content=False)
-    status = r.status
-    data = r.read()
-    r.release_conn()
-    return status, data
+def requests_retry_session(
+    retries: int=3,
+    backoff_factor: float=0.3,
+    status_forcelist: Tuple[int]=(500, 502, 503, 504),
+    session: Optional[requests.Session]=None,
+) -> requests.Session:
+    session: requests.Session = session or requests.Session()
+    retry = Retry(
+        total=retries,
+        read=retries,
+        connect=retries,
+        backoff_factor=backoff_factor,
+        status_forcelist=status_forcelist,
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    return session
+
+def download(
+    session: requests.Session,
+    verb: str,
+    url: str,
+    *,
+    retries: int,
+    timeout: int,
+    delay: int,
+    params: Optional[Dict]=None,
+    headers: Optional[Dict]=None,
+    data: Optional[str]=None,
+    auth: Optional[tuple]=None,
+) -> Optional[requests.Response]:
+    on_exception_retries: int = retries
+    while on_exception_retries > 0:
+        on_exception_retries -= 1
+        try:
+            res = session.request(verb, url, timeout=timeout, params=params, headers=headers, data=data, auth=auth)
+        except requests.HTTPError as e:
+            if on_exception_retries == 0:
+                logging.error(f"Http failure: {str(e)}")
+                return None
+            else:
+                logging.warning(f"Http failure: {str(e)}")
+                time.sleep(delay)
+                continue
+        except requests.ConnectionError as e:
+            if on_exception_retries == 0:
+                logging.error(f"Connection failure: {str(e)}")
+                return None
+            else:
+                logging.warning(f"Connection failure: {str(e)}")
+                time.sleep(delay)
+                continue
+        except requests.Timeout as e:
+            if on_exception_retries == 0:
+                logging.error(f"Network timeout failure: {str(e)}")
+                return None
+            else:
+                logging.warning(f"Network timeout failure: {str(e)}")
+                time.sleep(delay)
+                continue
+        except requests.RequestException as e:
+            if on_exception_retries == 0:
+                logging.error(f"Core requests failure: {str(e)}")
+                return None
+            else:
+                logging.warning(f"Core requests failure: {str(e)}")
+                time.sleep(delay)
+                continue
+        break
+                
+    #if res.status_code < 200 or 300 <= res.status_code:
+    #    logging.error(f'Http error: status={res.status_code}')
+    #    return None
+        
+    return res
+
 
 def main():
 
@@ -22,22 +96,30 @@ def main():
         print(kraken_res.text, file=sys.stderr)
         return
 
+    retries = 3
+    timeout = 15
+    delay = 5
+    headers = {
+        'Accept-Encoding': 'gzip, deflate, br',
+    }
+
+    session: requests.Session = requests_retry_session(retries=retries)
+    bina_res = download(
+        session, 'GET', 'https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false',
+        retries=retries,
+        timeout=timeout,
+        delay=delay,
+    )
     #bina_res = requests.get('https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false')
-    #if bina_res.status_code != 200:
-    #    print('[Binance] Bad status code. Aborting', file=sys.stderr)
-    #    print(bina_res.text, file=sys.stderr)
-    #    return
-    bina_status, bina_data = http_get_with_urllib3('https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false')
-    if bina_status != 200:
-        print('[Binance] Bad status code. Aborting', file=sys.stderr)
-        print(bina_data, file=sys.stderr)
+    if bina_res.status_code != 200:
+        print(f'[Binance] Bad status code {bina_res.status_code}. Aborting', file=sys.stderr)
+        print(bina_res.text, file=sys.stderr)
         return
 
     kraken_json = kraken_res.json()
     kraken_markets = sorted([mkt['wsname'].replace('/', '-') for _, mkt in kraken_json['result'].items()])
 
-#    bina_json = bina_res.json()
-    bina_json = json.loads(bina_data)
+    bina_json = bina_res.json()
     bina_markets = sorted([mkt['b'] + '-' + mkt['q'] for mkt in bina_json['data'] if mkt['st'] == 'TRADING'])
     # clone Binance USDT markets as USDC
     bina_markets.extend(m.replace('-USDT', '-USDC') for m in bina_markets if m.endswith('-USDT'))
