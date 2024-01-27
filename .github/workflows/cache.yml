@@ -22,6 +22,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    - name: What is my IP?
+      run: ip a
+
     - name: Update apt
       run: sudo apt-get update -y
 
