@@ -116,7 +116,7 @@ def main():
         print(f'[Binance] Bad status code {bina_res.status_code}. Aborting', file=sys.stderr)
         print(bina_res.text, file=sys.stderr)
         #return
-        with open("bina_fallback.json", "rt") as ifile:
+        with open("scripts/bina_fallback.json", "rt") as ifile:
             bina_json = json.loads(ifile.read())
     else:
         bina_json = bina_res.json()
