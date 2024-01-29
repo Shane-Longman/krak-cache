@@ -115,12 +115,16 @@ def main():
     if bina_res.status_code != 200:
         print(f'[Binance] Bad status code {bina_res.status_code}. Aborting', file=sys.stderr)
         print(bina_res.text, file=sys.stderr)
-        return
+        #return
+        with open("bina_fallback.json", "rt") as ifile:
+            bina_json = json.loads(ifile.read())
+    else:
+        bina_json = bina_res.json()
 
     kraken_json = kraken_res.json()
     kraken_markets = sorted([mkt['wsname'].replace('/', '-') for _, mkt in kraken_json['result'].items()])
 
-    bina_json = bina_res.json()
+    #bina_json = bina_res.json()
     bina_markets = sorted([mkt['b'] + '-' + mkt['q'] for mkt in bina_json['data'] if mkt['st'] == 'TRADING'])
     # clone Binance USDT markets as USDC
     bina_markets.extend(m.replace('-USDT', '-USDC') for m in bina_markets if m.endswith('-USDT'))
