@@ -106,7 +106,7 @@ def main():
 
     session: requests.Session = requests_retry_session(retries=retries)
     bina_res = download(
-        session, 'GET', 'http://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false',
+        session, 'GET', 'https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false',
         retries=retries,
         timeout=timeout,
         delay=delay,
