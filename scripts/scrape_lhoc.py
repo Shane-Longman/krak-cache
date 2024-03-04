@@ -61,7 +61,7 @@ def main(
             while retries > 0:
                 retries -= 1
                 if request_no % 5 == 0:
-                    time.sleep(2)
+                    time.sleep(3)
                 url = f'https://api.kraken.com/0/public/Trades?pair={market}&since={now_ts}'
                 res = requests.get(url, headers={'Accept-Encoding': 'gzip, deflate, br'})
                 if not res.status_code == 200:
