@@ -30,7 +30,7 @@ jobs:
       run: sudo apt-get update -y || true
 
     - name: Install python modules
-      run: pip3 install --user plac brotli requests
+      run: pip3 install --break-system-packages --user plac brotli requests
 
     - name: Create working directory
       run: mkdir -p "${INPUT_WORK_DIR}"
