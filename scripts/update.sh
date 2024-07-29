@@ -15,7 +15,7 @@ then
     for p in $PAIRS; do
 
         mkdir -p "${p}/${YM}"
-        scripts/scrape_lhoc.py "${p}/${YMD}" "${YMD//\//-}" "${p}"
+        python3 scripts/scrape_lhoc.py "${p}/${YMD}" "${YMD//\//-}" "${p}"
 
         # compress and delete original
         xz -9f "${p}/${YMD}"
