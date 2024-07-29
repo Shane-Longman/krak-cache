@@ -27,7 +27,7 @@ jobs:
       run: curl ifconfig.me
 
     - name: Update apt
-      run: sudo apt-get update -y
+      run: sudo apt-get update -y || true
 
     - name: Install python modules
       run: pip install --user plac brotli
