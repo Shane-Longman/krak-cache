@@ -30,11 +30,11 @@ jobs:
       run: sudo apt-get update -y || true
 
     - name: Install python modules
-      run: pip install --user plac brotli requests
+      run: pip3 install --user plac brotli requests
 
     - name: Create working directory
       run: mkdir -p "${INPUT_WORK_DIR}"
 
     - name: Build
       run: |
-        "${INPUT_SOURCE_DIR}"/pairs.py | "${INPUT_SOURCE_DIR}"/update.sh ${{ github.event.inputs.script_date }}
+        python3 "${INPUT_SOURCE_DIR}"/pairs.py | "${INPUT_SOURCE_DIR}"/update.sh ${{ github.event.inputs.script_date }}
