@@ -12,7 +12,8 @@ on:
 jobs:
   build:
     name: Collect daily data
-    runs-on: ubuntu-latest
+    #runs-on: ubuntu-latest
+    runs-on: macos-latest
     env:
         INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         INPUT_WORK_DIR: .build
