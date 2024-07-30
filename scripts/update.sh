@@ -4,12 +4,16 @@
 
 set -euxo pipefail
 
+mydate() {
+    [[ -x $(which gdate) ]] && { gdate "${@}"; } || { date "${@}"; }
+}
+
 echo ::group::Download yesterday\'s data
 
 if [[ -p /dev/stdin ]]
 then
     PAIRS=$(cat -)
-    YMD=${1:-$(date -d yesterday +%Y/%m/%d)}
+    YMD=${1:-$(mydate -d yesterday +%Y/%m/%d)}
     YM=${YMD:0:7}
 
     for p in $PAIRS; do
