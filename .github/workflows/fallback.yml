@@ -1,0 +1,25 @@
+name: "Download bina json"
+on:
+  schedule:
+    - cron: '29 1 * * *'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Collect daily data
+    runs-on: macos-latest
+    env:
+        INPUT_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        INPUT_WORK_DIR: .build
+        INPUT_SOURCE_DIR: scripts ## existing directory inside the repo
+        INPUT_INSTALL_EXTENSIONS: true
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: What is my IP?
+      run: curl ifconfig.me
+
+    - name: Download
+      run: |
+        wget https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false -O "${INPUT_SOURCE_DIR}/bina_fallback.json"
+        "${INPUT_SOURCE_DIR}"/commit.sh
