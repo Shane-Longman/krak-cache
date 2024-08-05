@@ -22,4 +22,4 @@ jobs:
     - name: Download
       run: |
         wget https://www.binance.com/bapi/asset/v2/public/asset-service/product/get-products?includeEtf=false -O "${INPUT_SOURCE_DIR}/bina_fallback.json"
-        "${INPUT_SOURCE_DIR}"/commit.sh
+        bash "${INPUT_SOURCE_DIR}"/commit.sh
